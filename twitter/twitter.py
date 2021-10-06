@@ -11,6 +11,7 @@ base_url="https://api.twitter.com/1.1/"
 query={}
 bearer_token = os.environ['BEARER_TOKEN']
 
+## authentication function
 def bearer_oauth(r):
     """
     Method required by bearer token authentication.
@@ -21,10 +22,10 @@ def bearer_oauth(r):
     return r
 
 
+######################################################################################
 # outputs 10 latest tweets by the user screen name
 def get_tweets_by_username(username):
 
-    example="GET https://api.twitter.com/1.1/statuses/lookup.json?id=20,1050118621198921728"
     endpoint = f"{base_url}statuses/user_timeline.json?screen_name={username}&count=10"
     
     resp = requests.request("GET",endpoint,auth= bearer_oauth)
@@ -51,4 +52,51 @@ def get_tweets_by_username(username):
     else:
         return error_output,404
 
+
 ####################################################################
+## search tweet by hashtags ##
+def tweets_hashtag(hashtag):
+    
+    endpoint = f"{base_url}/search/tweets.json?q=%23{hashtag}&count=10&result_type=recent"
+    resp = requests.request("GET",endpoint,auth= bearer_oauth)
+    
+
+    if resp.status_code in (200,202):
+
+        data = resp.json()
+        output = []
+
+        for tweet in data["statuses"]:
+            output.append({
+                "text":tweet["text"],
+                "user_screen_name":tweet["user"]["screen_name"],
+                "retweet_count":tweet["retweet_count"],
+            })
+        
+        return output,200
+    else:
+        return error_output,404
+
+#####################################################################
+## show tweets in given radius of lat,lon ##
+def geoloc(lat,lon,radius):
+    
+    endpoint = f"{base_url}/search/tweets.json?geocode={lat},{lon},{radius}km&count=10&result_type=recent"
+    resp = requests.request("GET",endpoint,auth= bearer_oauth)
+
+    if resp.status_code in (200,202):
+
+        data = resp.json()
+        output = []
+
+        for tweet in data["statuses"]:
+            output.append({
+                "text": tweet["text"],
+                "user_screen_name": tweet["user"]["screen_name"]
+            })
+        
+        return output,200
+    else:
+        return error_output,404
+
+##################################################################
