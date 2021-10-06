@@ -8,8 +8,8 @@ error_output = {
 
 base_url = "https://api.openweathermap.org/data/2.5/weather"
 
-API_KEY_TEMP = "275e4767a0b6e782b72dbca9457ddfff"           # temporary
-#API_KEY = os.environ["OPENWEATHER_KEY"]
+API_KEY = os.environ["OPENWEATHER_KEY"]
+
 '''
 Use API Key by setting it as an Environment variable
 in terminal: $ export OPENWEATHER_KEY=w233e....
@@ -19,10 +19,10 @@ in python: API_KEY = os.environ["OPENWEATHER_KEY"]
 ################################################################################
 def weather_by_city(city):
     
-    endpoint = f"{base_url}?q={city}&appid={API_KEY_TEMP}&units=metric"   
+    endpoint = f"{base_url}?q={city}&appid={API_KEY}&units=metric"   
     resp = requests.get(endpoint)
 
-    if resp.status_code in (200,203):
+    if resp.status_code in (200,202):
 
         weather_data = resp.json()
         
@@ -38,10 +38,10 @@ def weather_by_city(city):
 def weather_by_cord(lat,lon):
     
     base_url = "https://api.openweathermap.org/data/2.5/weather"
-    endpoint = f"{base_url}?lat={lat}&lon={lon}&appid={API_KEY_TEMP}&units=metric"
+    endpoint = f"{base_url}?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
     resp = requests.get(endpoint)
 
-    if resp.status_code in (200,203):
+    if resp.status_code in (200,202):
     
         weather_data = resp.json()
         if('country' not in weather_data['sys']):
@@ -64,10 +64,10 @@ def weather_by_cord(lat,lon):
 #####################################################################
 def weather_by_pincode(pincode):
     
-    endpoint = f"{base_url}?zip={pincode},IN&appid={API_KEY_TEMP}&units=metric"
+    endpoint = f"{base_url}?zip={pincode},IN&appid={API_KEY}&units=metric"
     resp = requests.get(endpoint)
 
-    if resp.status_code in (200,203):
+    if resp.status_code in (200,202):
 
         weather_data = resp.json()
         if('country' not in weather_data['sys']):
