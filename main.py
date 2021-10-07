@@ -21,7 +21,7 @@ async def get_apod():
     now=datetime.now()
     date = datetime(now.year, now.month, 1).date()
     URL = f'{BASE_URL}planetary/apod/?date={date}&&api_key={API_KEY}'
-    response = requests.get(URL)
+    response = requests.get(URL,verify=False)
     result = response.json()
     try:
         result = {key: result[key] for key in ['date', 'media_type', 'title', 'url']}
@@ -46,7 +46,7 @@ async def get_apod(year :int, month: str):
     
     URL = f'{BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
 
-    response = requests.get(URL)
+    response = requests.get(URL,verify=False)
     if(response.status_code == 200):
         result = response.json()
         result = [i['url'] for i in result if i['media_type'] == 'image']
@@ -72,7 +72,7 @@ async def get_apod(year :int, month: str):
     
     URL = f'{BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
 
-    response = requests.get(URL)
+    response = requests.get(URL,verify=False)
     if(response.status_code == 200):
         result = response.json()
         result = [i['url'] for i in result if i['media_type'] == 'video']
@@ -95,7 +95,7 @@ async def get_apod(date: str):
     
     URL = f'{BASE_URL}EPIC/api/natural/date/{date}?api_key={API_KEY}'
 
-    response = requests.get(URL)
+    response = requests.get(URL,verify=False)
     if(response.status_code == 200):
         results = response.json()
         results_list = []
