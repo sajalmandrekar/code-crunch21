@@ -1,3 +1,4 @@
+from os import error
 from fastapi import FastAPI
 from datetime import datetime, timedelta
 import requests
@@ -13,6 +14,10 @@ BASE_URL = 'https://api.nasa.gov/'
 def number_of_days_in_month(year, month):
     return monthrange(year, month)[1]
 
+error_output = {
+  "status": 404,
+  "message": "image/video not found"
+}
 
 app = FastAPI()
 
@@ -27,7 +32,7 @@ async def get_apod():
         result = {key: result[key] for key in ['date', 'media_type', 'title', 'url']}
     except:
         result = response.json()
-    return result
+    return error_output,404
 
 @app.get('/nasa/images-of-month/{year}/{month}')
 async def get_apod(year :int, month: str):
@@ -52,7 +57,7 @@ async def get_apod(year :int, month: str):
         result = [i['url'] for i in result if i['media_type'] == 'image']
         return result
     else:
-        return response.json()
+        return error_output,404
 
 
 @app.get('/nasa/videos-of-month/{year}/{month}')
@@ -78,7 +83,7 @@ async def get_apod(year :int, month: str):
         result = [i['url'] for i in result if i['media_type'] == 'video']
         return result
     else:
-        return response.json()
+        return error_output,404
 
 
 @app.get('/nasa/earth-poly-image/{date}')
@@ -106,5 +111,5 @@ async def get_apod(date: str):
         results_list = [i for i in results_list if (i['lat'] >= 10 and i['lat'] <= 40 and i['lon'] >= 120 and i['lon'] <= 160)]
         return results_list
     else:
-        return response.json()
+        return error_output,404
 
