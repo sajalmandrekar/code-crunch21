@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from datetime import datetime, timedelta
 import requests
 from calendar import monthrange
-import os
 
-##################  NASA API    ################################
-################################################################
-#API_KEY = ''
-API_KEY = os.environ.get("NASA_KEY")
+'''
+    API_KEY = '77Pj5RyutTSatUVfn210VEkvOa3DOk7GDyiCDL1m'
+    GET {BASE_URL}planetary/apod
+'''
+API_KEY = '77Pj5RyutTSatUVfn210VEkvOa3DOk7GDyiCDL1m'
+BASE_URL = 'https://api.nasa.gov/'
 
 def number_of_days_in_month(year, month):
     return monthrange(year, month)[1]
@@ -19,7 +20,7 @@ app = FastAPI()
 async def get_apod():
     now=datetime.now()
     date = datetime(now.year, now.month, 1).date()
-    URL = f'https://api.nasa.gov/planetary/apod/?date={date}&&api_key={API_KEY}'
+    URL = f'{BASE_URL}planetary/apod/?date={date}&&api_key={API_KEY}'
     response = requests.get(URL)
     result = response.json()
     try:
@@ -31,19 +32,19 @@ async def get_apod():
 @app.get('/nasa/images-of-month/{year}/{month}')
 async def get_apod(year :int, month: str):
     try:
-        month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        month = month_names.index(month)+1
+        month_names = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+        month = month_names.index(month.lower())+1
         start_date = datetime(year, month, 1).date()
         end_date = datetime(year, month, number_of_days_in_month(year, month)).date()
     except ValueError:
         return {
             'code': 400,
             'title': 'Bad Request',
-            'message': 'Invalid Month! Did you mispell the month?',
-            'full_help': 'Please note month names are case sensitive. Currently, the following names are valid inputs: ' + ', '.join(month_names)
+            'message': 'Invalid Month or year! Did you mispell the month or entered a wrong year?',
+            'full_help': 'Currently, the following names are valid inputs for month: ' + ', '.join(month_names) + '. Year has to be a positive integer.'
         }
     
-    URL = f'https://api.nasa.gov/planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
+    URL = f'{BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
 
     response = requests.get(URL)
     if(response.status_code == 200):
@@ -57,19 +58,19 @@ async def get_apod(year :int, month: str):
 @app.get('/nasa/videos-of-month/{year}/{month}')
 async def get_apod(year :int, month: str):
     try:
-        month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        month = month_names.index(month)+1
+        month_names = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+        month = month_names.index(month.lower())+1
         start_date = datetime(year, month, 1).date()
         end_date = datetime(year, month, number_of_days_in_month(year, month)).date()
     except ValueError:
         return {
             'code': 400,
             'title': 'Bad Request',
-            'message': 'Invalid Month! Did you mispell the month?',
-            'full_help': 'Please note month names are case sensitive. Currently, the following names are valid inputs: ' + ', '.join(month_names)
+            'message': 'Invalid Month or year! Did you mispell the month or entered a wrong year?',
+            'full_help': 'Currently, the following names are valid inputs for month: ' + ', '.join(month_names) + '. Year has to be a positive integer.'
         }
     
-    URL = f'https://api.nasa.gov/planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
+    URL = f'{BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
 
     response = requests.get(URL)
     if(response.status_code == 200):
@@ -92,7 +93,7 @@ async def get_apod(date: str):
             'message': 'Invalid Date! Did you enter date in the correct format (YYYY-MM-DD)?'
         }
     
-    URL = f'https://api.nasa.gov/EPIC/api/natural/date/{date}?api_key={API_KEY}'
+    URL = f'{BASE_URL}EPIC/api/natural/date/{date}?api_key={API_KEY}'
 
     response = requests.get(URL)
     if(response.status_code == 200):
@@ -102,12 +103,8 @@ async def get_apod(date: str):
             result_dict = {key: result[key] for key in ['identifier', 'caption', 'image', 'date']}
             result_dict.update({ key: result['centroid_coordinates'][key] for key in ['lat', 'lon'] })
             results_list.append(result_dict)
-        results_list = [i for i in results_list if (i['lat'] >= 100 and i['lat'] <= 140 and i['long'] >= 120 and i['long'] <= 160)]
+        results_list = [i for i in results_list if (i['lat'] >= 10 and i['lat'] <= 40 and i['lon'] >= 120 and i['lon'] <= 160)]
         return results_list
     else:
         return response.json()
-
-
-##################  CRYPTO API    ################################
-################################################################
 
