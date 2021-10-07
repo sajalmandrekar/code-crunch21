@@ -29,10 +29,10 @@ async def get_apod():
     response = requests.get(URL,verify=False)
     result = response.json()
     try:
-        result = {key: result[key] for key in ['date', 'media_type', 'title', 'url']}
+        result = {key: result[key] for key in ['date', 'media_type', 'title', 'url']},200
     except:
-        result = response.json()
-    return error_output,404
+        result = error_output,404
+    return result
 
 @app.get('/nasa/images-of-month/{year}/{month}')
 async def get_apod(year :int, month: str):
