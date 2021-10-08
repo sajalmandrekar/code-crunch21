@@ -361,3 +361,11 @@ async def get_github_issues(author: str,repo,label):
         return output
     else:
         raiseException(giterror)
+
+@app.get('/github/commits/{start},{end}/{repo}', responses={404: {"model": ExceptionModel}})
+async def get_github_commits(start,end,repo):
+    output,code = gh.get_commits(repo=repo,start_date=start,end_date=end)
+    if code == 200:
+        return output
+    else:
+        raiseException(giterror)
