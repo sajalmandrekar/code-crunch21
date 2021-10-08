@@ -350,3 +350,14 @@ async def get_profile_by_username(username: str):
         return response
     else:
         raiseException(giterror)
+
+################### task 2,3    ####################
+from github import github as gh
+
+@app.get('/github/issues/{author}/{repo}/{label}', responses={404: {"model": ExceptionModel}})
+async def get_github_issues(author: str,repo,label):
+    output,code = gh.get_issues(repo=repo,creator=author,label=label)
+    if code == 200:
+        return output
+    else:
+        raiseException(giterror)
