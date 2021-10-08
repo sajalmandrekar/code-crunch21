@@ -9,7 +9,7 @@ import os
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 API_KEY = os.environ.get('NASA_KEY')
-BASE_URL = 'https://api.nasa.gov/'
+NASA_BASE_URL = 'https://api.nasa.gov/'
 
 def number_of_days_in_month(year, month):
     '''
@@ -41,10 +41,10 @@ async def http_exception_handler(request, exc):
 
 
 @app.get('/nasa/image-of-month', responses={404: {"model": ExceptionModel}})
-async def get_apod(response: Response):
+async def get_apod():
     now=datetime.now()
     date = datetime(now.year, now.month, 1).date()
-    URL = f'{BASE_URL}planetary/apod/?date={date}&&api_key={API_KEY}'
+    URL = f'{NASA_BASE_URL}planetary/apod/?date={date}&&api_key={API_KEY}'
     response = requests.get(URL,verify=False)
     result = response.json()
     try:
@@ -54,7 +54,7 @@ async def get_apod(response: Response):
     return result
 
 @app.get('/nasa/images-of-month/{year}/{month}', responses={404: {"model": ExceptionModel}})
-async def get_apod(year :int, month: str, response: Response):
+async def get_apod(year :int, month: str):
     try:
         month_names = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
         month = month_names.index(month.lower())+1
@@ -63,7 +63,7 @@ async def get_apod(year :int, month: str, response: Response):
     except ValueError:
         raiseException()
     
-    URL = f'{BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
+    URL = f'{NASA_BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
 
     response = requests.get(URL,verify=False)
     if(response.status_code == 200):
@@ -75,7 +75,7 @@ async def get_apod(year :int, month: str, response: Response):
 
 
 @app.get('/nasa/videos-of-month/{year}/{month}', responses={404: {"model": ExceptionModel}})
-async def get_apod(year :int, month: str, response: Response):
+async def get_apod(year :int, month: str):
     try:
         month_names = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
         month = month_names.index(month.lower())+1
@@ -84,7 +84,7 @@ async def get_apod(year :int, month: str, response: Response):
     except ValueError:
         raiseException()
     
-    URL = f'{BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
+    URL = f'{NASA_BASE_URL}planetary/apod/?start_date={start_date}&&end_date={end_date}&&api_key={API_KEY}'
 
     response = requests.get(URL,verify=False)
     if(response.status_code == 200):
@@ -96,13 +96,13 @@ async def get_apod(year :int, month: str, response: Response):
 
 
 @app.get('/nasa/earth-poly-image/{date}', responses={404: {"model": ExceptionModel}})
-async def get_apod(date: str, response: Response):
+async def get_apod(date: str):
     try:
         date_obj = datetime.strptime(date, '%Y-%m-%d').date()
     except ValueError:
         raiseException()
     
-    URL = f'{BASE_URL}EPIC/api/natural/date/{date}?api_key={API_KEY}'
+    URL = f'{NASA_BASE_URL}EPIC/api/natural/date/{date}?api_key={API_KEY}'
 
     response = requests.get(URL,verify=False)
     if(response.status_code == 200):
@@ -191,7 +191,7 @@ def get_tweet_location(latitude:float,longitude:float,radius:str):
 ###########################     SECTION 4       #####################################
 ##########################  CRYPTO  ###############################################
 
-BASE_URL = 'https://api.coinpaprika.com/v1/'
+CRYPTO_BASE_URL = 'https://api.coinpaprika.com/v1/'
 
 crypto_error = {
         "status": 404,
@@ -205,7 +205,7 @@ async def get_all_coins():
         It does so by sending a request to 'https://api.coinpaprika.com/v1/coins' and filtering it to have only objects having type="coin".
         if any exception occurs, raise a HTTP404 Error
     '''
-    URL = BASE_URL + 'coins'
+    URL = CRYPTO_BASE_URL + 'coins'
     coins_list = requests.get(URL,verify=False)
     if(coins_list.status_code == 200):
         coins_list = coins_list.json()
@@ -222,7 +222,7 @@ async def get_all_tokens():
         It does so by sending a request to 'https://api.coinpaprika.com/v1/coins' and filtering it to have only objects having type="token".
         if any exception occurs, raise a HTTP404 Error
     '''
-    URL = BASE_URL + 'coins'
+    URL = CRYPTO_BASE_URL + 'coins'
     coins_list = requests.get(URL,verify=False)
     if(coins_list.status_code == 200):
         coins_list = coins_list.json()
@@ -238,7 +238,7 @@ async def get_coin_ticker(name: str):
         This route gets all details of a coin by its name.
         Like price, id, symbol, rank, etc.
     '''
-    URL = BASE_URL + 'tickers'
+    URL = CRYPTO_BASE_URL + 'tickers'
     coins_list = requests.get(URL,verify=False)
     if(coins_list.status_code == 200):
         coins_list = coins_list.json()
@@ -258,7 +258,7 @@ def get_founder_obj(founder):
         This function takes a founder object, and formats it properly, for placing it in the founders list, for a particular coin.
     '''
     person_id = founder['id']
-    URL = BASE_URL + f'people/{person_id}'
+    URL = CRYPTO_BASE_URL + f'people/{person_id}'
     person_details = requests.get(URL,verify=False)
     if person_details.status_code == 200:
         person_details = person_details.json()
@@ -276,7 +276,7 @@ def get_employee_obj(employee):
     '''
         This function takes a employee object, and formats it properly, for placing it in the team list list, for a particular coin.
     '''
-    URL = BASE_URL + f"people/{employee['id']}"
+    URL = CRYPTO_BASE_URL + f"people/{employee['id']}"
     person_details = requests.get(URL,verify=False)
     if person_details.status_code == 200:
         person_details = person_details.json()
@@ -296,14 +296,14 @@ async def get_team_details_by_name(name: str):
     '''
         This route returns the team behind a particular coin/token. This includes founder, authors, developers etc.
     '''
-    URL1 = BASE_URL + 'coins'
+    URL1 = CRYPTO_BASE_URL + 'coins'
     coins_list = requests.get(URL1,verify=False)
     if(coins_list.status_code == 200):
         coins_list = coins_list.json()
         try:
             response = list(filter(lambda coin: coin['name'] == name, coins_list))[0]
             coin_id = response['id']
-            URL2 = BASE_URL + f'coins/{coin_id}'
+            URL2 = CRYPTO_BASE_URL + f'coins/{coin_id}'
             coin_details = requests.get(URL2,verify=False).json()
             response = {key: coin_details[key] for key in ['name', 'symbol', 'rank', 'type', 'team']}
             try:

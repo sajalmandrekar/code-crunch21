@@ -1,31 +1,7 @@
 import os
 import requests
+from datetime import datetime
 
-
-'''
-Task 3: Get List of Github Issues filtered by labels
-Write an API endpoint with the below signature, which will get all github issues linked to a repository and having specific label.
-
-GET /github/issues/:author/:repo/:labels
-
-where :author name of the person to whom the issue is assigned to
-where :repo name of the repository
-where :labels label associated with the issue
-
-'''
-
-'''
-Task 4: Get List of Github Commits For a Repo within date range
-Write an API endpoint with the below signature, get the list of commits on a repository within the specified date range.
-
-GET /github/commits/:dates/:repo
-
-where :dates date range separated by comma.YYYY-MM-DD,YYYY-MM-DD
-where :repo_ is the name of the repository
-Example:
-
-GET http://localhost:3000/github/commits/2021-07-01,2021-08-30/microsoft%2Fvscode
-'''
 
 error_code = {
     "status": 404,
@@ -50,15 +26,7 @@ def labelMatches(label,set_of_labels):
 ## input as {owner}%2F{repo} (47)
 
 def get_issues(owner,repo,creator,label):
-    print(repo)
-    '''
-    split_list = repo.split("/")
-    try:
-        owner = split_list[0]
-        repo = split_list[1]        #! could get index out of bound error
-    except:
-        return error_code,404
-    '''
+    
     endpoint = f"{base_url}/repos/{owner}/{repo}/issues"
     query = {"creator":creator,}
 
@@ -121,17 +89,13 @@ def inTimeRange(commit_date,start_date,end_date):
 
 
 def get_commits(owner,repo,start_date,end_date):
-    ## https://api.github.com/repos/brave/link-bubble/commits
-    '''
-    full_repo = repo.split("/")
-    print(full_repo)
+    
     try:
-        owner = full_repo[0]
-        repo = full_repo[1]
-    except:
-        print("Invalid repo format")
+        date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+        date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+    except ValueError:
         return error_code,404
-    '''
+
     endpoint = f"{base_url}/repos/{owner}/{repo}/commits"
     resp = requests.get(endpoint,verify=False)
 

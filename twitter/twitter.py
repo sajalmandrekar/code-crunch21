@@ -83,9 +83,6 @@ def tweets_hashtag(hashtag):
 #####################################################################
 ## show tweets in given radius of lat,lon ##
 def geoloc(lat,lon,radius):
-    
-    #if radius[-2:] not in ('km','mi'):
-    #    return error_output,404
 
     endpoint = f"{base_url}/search/tweets.json?geocode={lat},{lon},{radius}&count=10&result_type=recent"
     resp = requests.request("GET",endpoint,auth= bearer_oauth,verify=False)
