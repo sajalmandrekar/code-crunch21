@@ -51,12 +51,16 @@ def labelMatches(label,set_of_labels):
 
 def get_issues(repo,creator,label):
     split_list = repo.split("/")
-    owner = split_list[0]
-    repo = split_list[1]        #! could get index out of bound error
+    try:
+        owner = split_list[0]
+        repo = split_list[1]        #! could get index out of bound error
+    except:
+        return error_code,404
+    
     endpoint = f"{base_url}/repos/{owner}/{repo}/issues"
     query = {"creator":creator,}
 
-    resp = requests.get(endpoint,params=query)
+    resp = requests.get(endpoint,params=query,verify=False)
 
     if resp.status_code in (200,202):
 
@@ -126,7 +130,7 @@ def get_commits(repo,start_date,end_date):
         return error_code,404
 
     endpoint = f"{base_url}/repos/{owner}/{repo}/commits"
-    resp = requests.get(endpoint)
+    resp = requests.get(endpoint,verify=False)
 
     if resp.status_code in (200,202):
 
