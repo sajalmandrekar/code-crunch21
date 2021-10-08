@@ -320,3 +320,33 @@ async def get_team_details_by_name(name: str):
     else:
         raiseException(crypto_error)
     return response
+
+
+######################################################################################
+########################### section 5   ############################
+
+BASE_URL_git = 'https://api.github.com/'
+
+giterror = { "status": 404,
+        "message": "resource not found"}
+
+@app.get('/github/user/{username}', responses={404: {"model": ExceptionModel}})
+async def get_profile_by_username(username: str):
+    URL = BASE_URL_git + f'users/{username}'
+    response = requests.get(URL,verify=False)
+    if response.status_code == 200:
+        response = response.json()
+        response = {key: response[key] for key in ['name', 'avatar_url', 'public_repos', 'followers_url', 'following_url', 'url', 'bio']}
+
+        followers = requests.get(URL + '/followers',verify=False).json()
+        following = requests.get(URL + '/following',verify=False).json()
+
+        response['followers'] = [user['login'] for user in followers]
+        response['following'] = [user['login'] for user in following]
+
+        del response['followers_url']
+        del response['following_url']
+
+        return response
+    else:
+        raiseException(giterror)
