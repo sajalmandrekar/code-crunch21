@@ -354,17 +354,17 @@ async def get_profile_by_username(username: str):
 ################### task 2,3    ####################
 from github import github as gh
 
-@app.get('/github/issues/{author}/{repo}/{label}', responses={404: {"model": ExceptionModel}})
-async def get_github_issues(author: str,repo,label):
-    output,code = gh.get_issues(repo=repo,creator=author,label=label)
+@app.get('/github/issues/{author}/{owner}/{repo}/{label}', responses={404: {"model": ExceptionModel}})
+async def get_github_issues(author,owner,repo,label):
+    output,code = gh.get_issues(owner=owner,repo=repo,creator=author,label=label)
     if code == 200:
         return output
     else:
         raiseException(giterror)
 
-@app.get('/github/commits/{start},{end}/{repo}', responses={404: {"model": ExceptionModel}})
-async def get_github_commits(start,end,repo):
-    output,code = gh.get_commits(repo=repo,start_date=start,end_date=end)
+@app.get('/github/commits/{start},{end}/{owner}/{repo}', responses={404: {"model": ExceptionModel}})
+async def get_github_commits(start,end,owner,repo):
+    output,code = gh.get_commits(owner=owner,repo=repo,start_date=start,end_date=end)
     if code == 200:
         return output
     else:

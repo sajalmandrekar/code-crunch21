@@ -49,14 +49,16 @@ def labelMatches(label,set_of_labels):
 ## query: label, creator
 ## input as {owner}%2F{repo} (47)
 
-def get_issues(repo,creator,label):
+def get_issues(owner,repo,creator,label):
+    print(repo)
+    '''
     split_list = repo.split("/")
     try:
         owner = split_list[0]
         repo = split_list[1]        #! could get index out of bound error
     except:
         return error_code,404
-    
+    '''
     endpoint = f"{base_url}/repos/{owner}/{repo}/issues"
     query = {"creator":creator,}
 
@@ -118,17 +120,18 @@ def inTimeRange(commit_date,start_date,end_date):
         return False
 
 
-def get_commits(repo,start_date,end_date):
+def get_commits(owner,repo,start_date,end_date):
     ## https://api.github.com/repos/brave/link-bubble/commits
-
+    '''
     full_repo = repo.split("/")
+    print(full_repo)
     try:
         owner = full_repo[0]
         repo = full_repo[1]
     except:
         print("Invalid repo format")
         return error_code,404
-
+    '''
     endpoint = f"{base_url}/repos/{owner}/{repo}/commits"
     resp = requests.get(endpoint,verify=False)
 
