@@ -35,6 +35,9 @@ def get_tweets_by_username(username):
         tweets = []     # list of dictionary
         twitter_data = resp.json()
 
+        if not twitter_data:
+            return error_output,404
+
         ## store tweets
         for tweet_data in twitter_data:
             tweets.append({
@@ -48,7 +51,7 @@ def get_tweets_by_username(username):
             "followers_count": twitter_data[0]['user']['followers_count'],
             "friends_count": twitter_data[0]['user']['friends_count'],
             "tweets": tweets
-        }
+        },200
     else:
         return error_output,404
 
@@ -60,7 +63,7 @@ def tweets_hashtag(hashtag):
     endpoint = f"{base_url}/search/tweets.json?q=%23{hashtag}&count=10&result_type=recent"
     resp = requests.request("GET",endpoint,auth= bearer_oauth)
     
-
+    print(resp.status_code)
     if resp.status_code in (200,202):
 
         data = resp.json()
@@ -81,7 +84,10 @@ def tweets_hashtag(hashtag):
 ## show tweets in given radius of lat,lon ##
 def geoloc(lat,lon,radius):
     
-    endpoint = f"{base_url}/search/tweets.json?geocode={lat},{lon},{radius}km&count=10&result_type=recent"
+    #if radius[-2:] not in ('km','mi'):
+    #    return error_output,404
+
+    endpoint = f"{base_url}/search/tweets.json?geocode={lat},{lon},{radius}&count=10&result_type=recent"
     resp = requests.request("GET",endpoint,auth= bearer_oauth)
 
     if resp.status_code in (200,202):

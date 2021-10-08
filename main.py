@@ -18,15 +18,18 @@ def number_of_days_in_month(year, month):
     '''
     return monthrange(year, month)[1]
 
+nasa_error = {
+        "status": 404,
+        "message": "image/video not found"
+    }
+
+
 class ExceptionModel(BaseModel):
     status: int
     message: str
 
-def raiseException():
-    raise HTTPException(status_code=404, detail={
-        "status": 404,
-        "message": "image/video not found"
-    })
+def raiseException(error_message=nasa_error):
+    raise HTTPException(status_code=404, detail=error_message)
 
 
 app = FastAPI()     # the base app
@@ -113,3 +116,77 @@ async def get_apod(date: str, response: Response):
         return results_list
     else:
         raiseException()
+
+####################################    SECTION 2  ##############################################
+####################################    WEATHER API     ######################################
+
+from weather import weather
+
+#####################   TASK 2  ############################################
+
+@app.get('/weather/search',responses={404: {"model": ExceptionModel}})
+def weather_by_location(lat:float=-1,lon:float=-1,pincode:int=-1):
+    output = {}
+    if lat == -1 or lon == -1:
+        ## search by pincode
+        output,code = weather.weather_by_pincode(pincode)
+    else:
+        ## search by coordinates
+        output,code = weather.weather_by_cord(lat=lat,lon=lon)
+
+    if code == 200:
+        return output
+    else:
+        raiseException(output)
+
+
+################### TASK 1  ##############################################
+
+@app.get('/weather/{city}',responses={404: {"model": ExceptionModel}})
+def weather_by_city(city:str):
+    output,code = weather.weather_by_city(city)
+
+    if code == 200:
+        return output
+    else:
+        raiseException(output)
+
+#####################################################################################
+########################    SECTION 3       #########################################
+########################    TWITTER API     #########################################
+
+from twitter import twitter  
+
+#############################   TASK 1  ###########################################
+@app.get('/twitter/user/{username}',responses={404: {"model": ExceptionModel}})
+def get_user_tweet(username:str):
+
+    output,code = twitter.get_tweets_by_username(username)
+    if code == 200:
+        return output
+    else:
+        raiseException(output)
+
+#############################   TASK 2  ###########################################
+@app.get('/twitter/hashtag/{hashtag}',responses={404: {"model": ExceptionModel}})
+def get_hashtag(hashtag:str):
+
+    output,code = twitter.tweets_hashtag(hashtag)
+    if code == 200:
+        return output
+    else:
+        raiseException(output)
+
+#############################   TASK 3  ###########################################
+@app.get('/twitter/location',responses={404: {"model": ExceptionModel}})
+def get_tweet_location(latitude:float,longitude:float,radius:str):
+
+    output,code = twitter.geoloc(lat=latitude,lon=longitude,radius=radius)
+    if code == 200:
+        return output
+    else:
+        raiseException(output)
+
+#####################################################################################
+###########################     SECTION 4       #####################################
+
