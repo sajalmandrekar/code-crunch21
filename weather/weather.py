@@ -20,7 +20,7 @@ in python: API_KEY = os.environ["OPENWEATHER_KEY"]
 def weather_by_city(city):
     
     endpoint = f"{base_url}?q={city}&appid={API_KEY}&units=metric"   
-    resp = requests.get(endpoint)
+    resp = requests.get(endpoint,verify=False)
 
     if resp.status_code in (200,202):
 
@@ -41,7 +41,7 @@ def weather_by_cord(lat,lon):
     endpoint = f"{base_url}?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
 
     if lat>=0 and lon>=0:
-        resp = requests.get(endpoint)
+        resp = requests.get(endpoint,verify=False)
     else:
         return error_output,404
 
@@ -69,7 +69,7 @@ def weather_by_cord(lat,lon):
 def weather_by_pincode(pincode):
     
     endpoint = f"{base_url}?zip={pincode},IN&appid={API_KEY}&units=metric"
-    resp = requests.get(endpoint)
+    resp = requests.get(endpoint,verify=False)
 
     if resp.status_code in (200,202):
 

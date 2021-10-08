@@ -189,4 +189,134 @@ def get_tweet_location(latitude:float,longitude:float,radius:str):
 
 #####################################################################################
 ###########################     SECTION 4       #####################################
+##########################  CRYPTO  ###############################################
 
+BASE_URL = 'https://api.coinpaprika.com/v1/'
+
+crypto_error = {
+        "status": 404,
+        "message": "coin/token not found"
+    }
+
+@app.get('/crypto/coins', responses={404: {"model": ExceptionModel}})
+async def get_all_coins():
+    '''
+        Get All Coins sends a list of all coins (type = "coin").
+        It does so by sending a request to 'https://api.coinpaprika.com/v1/coins' and filtering it to have only objects having type="coin".
+        if any exception occurs, raise a HTTP404 Error
+    '''
+    URL = BASE_URL + 'coins'
+    coins_list = requests.get(URL,verify=False)
+    if(coins_list.status_code == 200):
+        coins_list = coins_list.json()
+        response = [{key: coin[key] for key in ['id', 'name', 'symbol', 'type']} for coin in coins_list if coin['type'] == 'coin']
+        return response
+    else:
+        raiseException(crypto_error)
+
+
+@app.get('/crypto/tokens', responses={404: {"model": ExceptionModel}})
+async def get_all_tokens():
+    '''
+        Get All Tokens sends a list of all coins (type = "token").
+        It does so by sending a request to 'https://api.coinpaprika.com/v1/coins' and filtering it to have only objects having type="token".
+        if any exception occurs, raise a HTTP404 Error
+    '''
+    URL = BASE_URL + 'coins'
+    coins_list = requests.get(URL,verify=False)
+    if(coins_list.status_code == 200):
+        coins_list = coins_list.json()
+        response = [{key: coin[key] for key in ['id', 'name', 'symbol', 'type']} for coin in coins_list if coin['type'] == 'token']
+        return response
+    else:
+        raiseException(crypto_error)
+
+
+@app.get('/crypto/quote/{name}', responses={404: {"model": ExceptionModel}})
+async def get_coin_ticker(name: str):
+    '''
+        This route gets all details of a coin by its name.
+        Like price, id, symbol, rank, etc.
+    '''
+    URL = BASE_URL + 'tickers'
+    coins_list = requests.get(URL,verify=False)
+    if(coins_list.status_code == 200):
+        coins_list = coins_list.json()
+        try:
+            response = list(filter(lambda coin: coin['name'] == name, coins_list))[0]
+            response = {key: response[key] for key in ['id', 'name', 'symbol', 'rank', 'circulating_supply', 'total_supply', 'max_supply', 'quotes']}
+            response['price'] = response['quotes']['USD']['price']
+            del response['quotes']
+        except IndexError:
+            raiseException(crypto_error)
+        return response
+    else:
+        raiseException(crypto_error)
+
+def get_founder_obj(founder):
+    '''
+        This function takes a founder object, and formats it properly, for placing it in the founders list, for a particular coin.
+    '''
+    person_id = founder['id']
+    URL = BASE_URL + f'people/{person_id}'
+    person_details = requests.get(URL,verify=False)
+    if person_details.status_code == 200:
+        person_details = person_details.json()
+        result = {'name': founder['name']}
+        for link_key in ['github', 'linkedin', 'medium', 'twitter', 'additional']:
+            try:
+                result['links' if link_key == 'additional' else link_key] = person_details['links'][link_key][0]['url']
+            except KeyError:
+                pass
+        return result
+    else:
+        raiseException(crypto_error)
+
+def get_employee_obj(employee):
+    '''
+        This function takes a employee object, and formats it properly, for placing it in the team list list, for a particular coin.
+    '''
+    URL = BASE_URL + f"people/{employee['id']}"
+    person_details = requests.get(URL,verify=False)
+    if person_details.status_code == 200:
+        person_details = person_details.json()
+        result = {'name': employee['name'], 'position': employee['position']}
+        for link_key in ['github', 'linkedin', 'medium', 'twitter', 'additional']:
+            try:
+                result['links' if link_key == 'additional' else link_key] = person_details['links'][link_key][0]['url']
+            except KeyError:
+                result['links' if link_key == 'additional' else link_key] = ""
+        return result
+    else:
+        raiseException(crypto_error)
+
+
+@app.get('/crypto/team/{name}', responses={404: {"model": ExceptionModel}})
+async def get_team_details_by_name(name: str):
+    '''
+        This route returns the team behind a particular coin/token. This includes founder, authors, developers etc.
+    '''
+    URL1 = BASE_URL + 'coins'
+    coins_list = requests.get(URL1,verify=False)
+    if(coins_list.status_code == 200):
+        coins_list = coins_list.json()
+        try:
+            response = list(filter(lambda coin: coin['name'] == name, coins_list))[0]
+            coin_id = response['id']
+            URL2 = BASE_URL + f'coins/{coin_id}'
+            coin_details = requests.get(URL2,verify=False).json()
+            response = {key: coin_details[key] for key in ['name', 'symbol', 'rank', 'type', 'team']}
+            try:
+                founders = [get_founder_obj(person) for person in response['team'] if 'founder' in person['position'].lower()]
+                employees = [get_employee_obj(person) for person in response['team'] if 'founder' not in person['position'].lower()]
+                response['founders'] = founders
+                response['developers'] = employees
+            except TypeError:
+                response['founders'] = None
+                response['developers'] = None
+            del response['team']
+        except IndexError:
+            raiseException(crypto_error)
+    else:
+        raiseException(crypto_error)
+    return response

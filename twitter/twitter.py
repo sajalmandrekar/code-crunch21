@@ -28,7 +28,7 @@ def get_tweets_by_username(username):
 
     endpoint = f"{base_url}statuses/user_timeline.json?screen_name={username}&count=10"
     
-    resp = requests.request("GET",endpoint,auth= bearer_oauth)
+    resp = requests.request("GET",endpoint,auth= bearer_oauth,verify=False)
 
     if resp.status_code in (200,202):
 
@@ -61,7 +61,7 @@ def get_tweets_by_username(username):
 def tweets_hashtag(hashtag):
     
     endpoint = f"{base_url}/search/tweets.json?q=%23{hashtag}&count=10&result_type=recent"
-    resp = requests.request("GET",endpoint,auth= bearer_oauth)
+    resp = requests.request("GET",endpoint,auth= bearer_oauth,verify=False)
     
     print(resp.status_code)
     if resp.status_code in (200,202):
@@ -88,7 +88,7 @@ def geoloc(lat,lon,radius):
     #    return error_output,404
 
     endpoint = f"{base_url}/search/tweets.json?geocode={lat},{lon},{radius}&count=10&result_type=recent"
-    resp = requests.request("GET",endpoint,auth= bearer_oauth)
+    resp = requests.request("GET",endpoint,auth= bearer_oauth,verify=False)
 
     if resp.status_code in (200,202):
 
