@@ -12,4 +12,5 @@ fill your team details before writing any code
 ------- All the best ------
 
 App hosted at: https://coderspp.herokuapp.com
+
 For detailed schema, you can visit https://coderspp.herokuapp.com/docs
