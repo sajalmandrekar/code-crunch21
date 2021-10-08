@@ -11,6 +11,5 @@ fill your team details before writing any code
 
 ------- All the best ------
 
-### The NASA API
-- This is a wrapper api for nasa api. For detailed schema, you can visit https://coderspp.herokuapp.com/docs
-- For Nasa API implementation check main.py
+App hosted at: https://coderspp.herokuapp.com
+For detailed schema, you can visit https://coderspp.herokuapp.com/docs
