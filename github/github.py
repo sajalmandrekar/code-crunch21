@@ -29,7 +29,7 @@ def labelMatches(label,set_of_labels):
 def get_issues(owner,repo,creator,label):
     
     endpoint = f"{base_url}/repos/{owner}/{repo}/issues"
-    query = {"creator":creator,"state":"all","label":label}
+    query = {"creator":creator,"state":"all","labels":label}
 
     resp = requests.get(endpoint,params=query,verify=False)
 
