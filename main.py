@@ -142,7 +142,7 @@ def weather_by_location(lat:float=-1,lon:float=-1,pincode:int=-1):
 
 ################### TASK 1  ##############################################
 
-@app.get('/weather/{city}',responses={404: {"model": ExceptionModel}})
+@app.get('/weather/city/{city}',responses={404: {"model": ExceptionModel}})
 def weather_by_city(city:str):
     output,code = weather.weather_by_city(city)
 
