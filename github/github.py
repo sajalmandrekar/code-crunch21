@@ -13,13 +13,14 @@ base_url = "https://api.github.com"
 
 
 ## checks if label in json matches passed parameter
+'''
 def labelMatches(label,set_of_labels):
 
     for label_data in set_of_labels:
         if(label == label_data["name"]):
             return True
     return False
-
+'''
 ## https://api.github.com/repos/microsoft/vscode/issues?creator=OldStarchy
 ## endpoint: /repos/{owner}/{repo}/issues
 ## query: label, creator
@@ -28,7 +29,7 @@ def labelMatches(label,set_of_labels):
 def get_issues(owner,repo,creator,label):
     
     endpoint = f"{base_url}/repos/{owner}/{repo}/issues"
-    query = {"creator":creator,}
+    query = {"creator":creator,"state":"all","label":label}
 
     resp = requests.get(endpoint,params=query,verify=False)
 
@@ -38,20 +39,18 @@ def get_issues(owner,repo,creator,label):
         issues_data = resp.json()
         for issue in issues_data:
 
-            if labelMatches(label,issue["labels"]) == True:
+            if issue["assignee"] is not None:
+                assignee = issue["assignee"]["login"]
+            else:
+                assignee = None
 
-                if issue["assignee"] is not None:
-                    assignee = issue["assignee"]["login"]
-                else:
-                    assignee = None
-
-                output.append({
+            output.append({
                     "id": issue["id"],
                     "title": issue["title"],
                     "state": issue["state"],
                     "comments_count": issue["comments"],
                     "assignee": assignee
-                })
+            })
 
         return output,200
     else:
