@@ -381,7 +381,7 @@ def formatRepo(repo):
     repo['creation_date'] = repo.pop('created_at')
     return repo
 
-@app.get('/github/repos/', responses={404: {"model": ExceptionModel}})
+@app.get('/github/repo/', responses={404: {"model": ExceptionModel}})
 async def get_all_repos_by_star_range(star_range: str = Query(..., alias='range')):
     URL = BASE_URL_git + 'search/code'
     try:
