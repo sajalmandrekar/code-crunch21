@@ -125,14 +125,14 @@ from weather import weather
 #####################   TASK 2  ############################################
 
 @app.get('/weather/search',responses={404: {"model": ExceptionModel}})
-def weather_by_location(lat:float=-1,lon:float=-1,pincode:int=-1):
+def weather_by_location(latitude:float=-1,longitude:float=-1,pin_code:int=-1):
     output = {}
-    if lat == -1 or lon == -1:
+    if latitude == -1 or longitude == -1:
         ## search by pincode
-        output,code = weather.weather_by_pincode(pincode)
+        output,code = weather.weather_by_pincode(pin_code)
     else:
         ## search by coordinates
-        output,code = weather.weather_by_cord(lat=lat,lon=lon)
+        output,code = weather.weather_by_cord(lat=latitude,lon=longitude)
 
     if code == 200:
         return output
