@@ -60,6 +60,7 @@ def get_issues(owner,repo,creator,label):
 ###########################################################################
 ################### TASK 4 ################################################
 
+'''
 def inTimeRange(commit_date,start_date,end_date):
 
     list_commit_date = commit_date.split("-")
@@ -86,7 +87,8 @@ def inTimeRange(commit_date,start_date,end_date):
     else:
         #print(False)
         return False
-
+'''
+# repos/microsoft/vscode/commits?since=2021-07-01&until=2021-08-30
 
 def get_commits(owner,repo,start_date,end_date):
     
@@ -97,26 +99,36 @@ def get_commits(owner,repo,start_date,end_date):
         return error_code,404
 
     endpoint = f"{base_url}/repos/{owner}/{repo}/commits"
-    resp = requests.get(endpoint,verify=False)
+    query = {
+        "since":start_date,
+        "until":end_date
+    }
+
+    resp = requests.get(endpoint,params=query,verify=False)
 
     if resp.status_code in (200,202):
 
         repo_data = resp.json()
         output = []
         for repo in repo_data:
-            commit_date = repo["commit"]["committer"]["date"]
-            val = inTimeRange(commit_date,start_date,end_date)
-            if val == 404:
-                print("Invalid date input")
-                return error_code,404
-            if val == True:
                 output.append({
                     "node_id": repo["node_id"],
                     "message": repo["commit"]["message"],
-                    "commiter_name": repo["commit"]["author"]["name"],
-                    "date": commit_date
+                    "commiter_name": repo["commit"]["committer"]["name"],
+                    "date": repo["commit"]["committer"]["date"]
                 })
         
         return output,200
     else:
         return error_code,404
+
+
+'''
+commit_date = repo["commit"]["committer"]["date"]
+            val = inTimeRange(commit_date,start_date,end_date)
+            if val == 404:
+                print("Invalid date input")
+                return error_code,404
+            if val == True:
+
+'''
