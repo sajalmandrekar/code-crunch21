@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Query
 from datetime import datetime, timedelta
 from fastapi.responses import JSONResponse
 import requests
@@ -351,7 +351,7 @@ async def get_profile_by_username(username: str):
     else:
         raiseException(giterror)
 
-################### task 2,3    ####################
+################### task 3,4    ####################
 from github import github as gh
 
 @app.get('/github/issues/{author}/{owner}/{repo}/{label}', responses={404: {"model": ExceptionModel}})
@@ -367,5 +367,42 @@ async def get_github_commits(start,end,owner,repo):
     output,code = gh.get_commits(owner=owner,repo=repo,start_date=start,end_date=end)
     if code == 200:
         return output
+    else:
+        raiseException(giterror)
+
+#############################################################################
+############################ Task 2 ##########################
+
+
+def formatRepo(repo):
+    repo = {key: repo[key] for key in ['name', 'created_at', 'stargazers_count', 'size', 'forks', 'owner']}
+    repo['stars'] = repo.pop('stargazers_count')
+    repo['owner_name'] = repo.pop('owner')['login']
+    repo['creation_date'] = repo.pop('created_at')
+    return repo
+
+@app.get('/github/repos/', responses={404: {"model": ExceptionModel}})
+async def get_all_repos_by_star_range(star_range: str = Query(..., alias='range')):
+    URL = BASE_URL_git + 'search/code'
+    try:
+        if(len([i.strip() for i in star_range.split(',')]) != 2):
+            raiseException(giterror, 404)
+        start, end = [i.strip() for i in star_range.split(',')]
+        x = int(start)
+        x = int(end)
+    except:
+        raiseException(giterror)
+    if start > end:
+        raiseException(giterror)
+    print(star_range)
+    print(start,end)
+    URL = f'https://api.github.com/search/repositories?q=stars%3A{start}..{end}&type=Repositories'
+    response = requests.get(URL, verify=False)
+    print(response)
+    if response.status_code == 200:
+        response =  response.json()
+        repos_list = response['items']
+        repos_list = [formatRepo(i) for i in repos_list]
+        return repos_list
     else:
         raiseException(giterror)
