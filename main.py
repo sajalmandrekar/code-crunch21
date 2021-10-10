@@ -422,19 +422,19 @@ bad_request_error = {
 
 @app.get("/{val}")
 def bad_request(val:str):
-    raise HTTPException(status_code=400, details=bad_request_error)
+    raise HTTPException(status_code=400, detail=bad_request_error)
 
 @app.get("/{val}/{val2}")
 def bad_request(val:str,val2:str):
-    raise HTTPException(status_code=400, details=bad_request_error)
+    raise HTTPException(status_code=400, detail=bad_request_error)
 
 @app.get("/{val}/{val2}/{val3}")
 def bad_request(val:str,val2:str,val3):
-    raise HTTPException(status_code=400, details=bad_request_error)
+    raise HTTPException(status_code=400, detail=bad_request_error)
 
 @app.get("/{val}/{val2}/{val3}/{val4}")
 def bad_request(val:str,val2:str,val3,val4):
-    raise HTTPException(status_code=400, details=bad_request_error)
+    raise HTTPException(status_code=400, detail=bad_request_error)
 
 @app.get("/{val}/{val2}/{val3}/{val4}/{val5}")
 def bad_request(val:str,val2:str,val3,val4,val5):
