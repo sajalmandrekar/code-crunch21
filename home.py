@@ -9,8 +9,8 @@ output = {
             "Authentication":"API key",
             "endpoints":[
                 {"type":"GET","url":"/nasa/image-of-month","params":[]},
-                {"type":"GET","url":"/nasa/images-of-month/{year},{month}","params":[]},
-                {"type":"GET","url":"/nasa/videos-of-month/{year},{month}","params":[]},
+                {"type":"GET","url":"/nasa/images-of-month/{year}/{month}","params":[]},
+                {"type":"GET","url":"/nasa/videos-of-month/{year}/{month}","params":[]},
                 {"type":"GET","url":"/nasa/earth-poly-image/{YYYY-MM-DD}","params":[]},
             ],
         },

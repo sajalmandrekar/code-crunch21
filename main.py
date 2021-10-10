@@ -415,16 +415,27 @@ async def get_all_repos_by_star_range(star_range: str = Query(..., alias='range'
 ##################################################################################
 #############################   BAD REQUEST     ##################################
 
-@app.get("/{val}")
-def bad_request(val:str):
-    raise HTTPException(status_code=400, detail={
+bad_request_error = {
         "status": 400,
         "message": "Bad Request"
-    })
+    }
+
+@app.get("/{val}")
+def bad_request(val:str):
+    raise HTTPException(status_code=400, details=bad_request_error)
 
 @app.get("/{val}/{val2}")
 def bad_request(val:str,val2:str):
-    raise HTTPException(status_code=400, detail={
-        "status": 400,
-        "message": "Bad Request"
-    })
+    raise HTTPException(status_code=400, details=bad_request_error)
+
+@app.get("/{val}/{val2}/{val3}")
+def bad_request(val:str,val2:str,val3):
+    raise HTTPException(status_code=400, details=bad_request_error)
+
+@app.get("/{val}/{val2}/{val3}/{val4}")
+def bad_request(val:str,val2:str,val3,val4):
+    raise HTTPException(status_code=400, details=bad_request_error)
+
+@app.get("/{val}/{val2}/{val3}/{val4}/{val5}")
+def bad_request(val:str,val2:str,val3,val4,val5):
+    raise HTTPException(status_code=400, detail=bad_request_error)
