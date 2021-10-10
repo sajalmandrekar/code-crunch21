@@ -421,3 +421,10 @@ def bad_request(val:str):
         "status": 400,
         "message": "Bad Request"
     })
+
+@app.get("/{val}/{val2}")
+def bad_request(val:str,val2:str):
+    raise HTTPException(status_code=400, detail={
+        "status": 400,
+        "message": "Bad Request"
+    })
