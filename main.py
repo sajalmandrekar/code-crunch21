@@ -5,6 +5,7 @@ import requests
 from calendar import monthrange
 from pydantic import BaseModel
 import os
+import home
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -38,6 +39,10 @@ app = FastAPI()     # the base app
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
     return JSONResponse(exc.detail, status_code=exc.status_code)
+
+@app.get("/")
+def home_url():
+    return home.output
 
 
 @app.get('/nasa/image-of-month', responses={404: {"model": ExceptionModel}})
@@ -406,3 +411,13 @@ async def get_all_repos_by_star_range(star_range: str = Query(..., alias='range'
         return repos_list
     else:
         raiseException(giterror)
+
+##################################################################################
+#############################   BAD REQUEST     ##################################
+
+@app.get("/{val}")
+def bad_request(val:str):
+    raise HTTPException(status_code=400, detail={
+        "status": 400,
+        "message": "Bad Request"
+    })
